@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-black;
+  }
+  
+  .dark {
+    @apply bg-black;
+  }
+
+  input {
+    @apply bg-transparent;
+  }
+}
+
+/* Custom styles for the red gradient overlay */
+.gradient-overlay {
+  background: linear-gradient(45deg, transparent 0%, rgba(220, 38, 38, 0.2) 100%);
+}

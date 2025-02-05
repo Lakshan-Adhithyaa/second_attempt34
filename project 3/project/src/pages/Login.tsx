@@ -13,6 +13,7 @@ function Login() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [formData, setFormData] = useState<LoginForm>({
     email: '',
     password: '',
@@ -60,6 +61,13 @@ function Login() {
 
       if (error) throw error;
 
+      // Handle remember me logic here
+      if (rememberMe) {
+        localStorage.setItem('rememberedEmail', formData.email);
+      } else {
+        localStorage.removeItem('rememberedEmail');
+      }
+
       toast.success('Successfully logged in!');
       navigate('/dashboard');
     } catch (error) {
@@ -67,6 +75,11 @@ function Login() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSkip = () => {
+    toast('Continuing as guest');
+    navigate('/dashboard');
   };
 
   const handleGoogleSignIn = () => {
@@ -146,14 +159,23 @@ function Login() {
                 )}
               </div>
 
-              <div className="flex justify-end">
+              <div className="flex items-center justify-between">
+                <label className="flex items-center space-x-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="form-checkbox h-4 w-4 text-red-500 rounded border-white/20 bg-white/10"
+                  />
+                  <span className="text-gray-400">Remember me</span>
+                </label>
                 <button 
                   type="button"
                   onClick={() => navigate('/forgot-password')}
                   className="text-sm text-gray-400 hover:text-red-500 transition-colors"
                   disabled={isLoading}
                 >
-                  Forgot your password?
+                  Forgot password?
                 </button>
               </div>
 
@@ -197,17 +219,27 @@ function Login() {
                 </button>
               </div>
 
-              <p className="text-center text-gray-400 mt-6">
-                Don't have an account?{' '}
+              <div className="flex flex-col space-y-4">
+                <p className="text-center text-gray-400">
+                  Don't have an account?{' '}
+                  <button
+                    type="button"
+                    onClick={() => navigate('/signup')}
+                    className="text-red-500 hover:text-red-400 transition-colors"
+                    disabled={isLoading}
+                  >
+                    Sign up
+                  </button>
+                </p>
                 <button
                   type="button"
-                  onClick={() => navigate('/signup')}
-                  className="text-red-500 hover:text-red-400 transition-colors"
+                  onClick={handleSkip}
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
                   disabled={isLoading}
                 >
-                  Sign up
+                  Skip for now
                 </button>
-              </p>
+              </div>
             </form>
           </motion.div>
         </main>

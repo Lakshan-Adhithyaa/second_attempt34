@@ -61,7 +61,6 @@ function Login() {
 
       if (error) throw error;
 
-      // Handle remember me logic here
       if (rememberMe) {
         localStorage.setItem('rememberedEmail', formData.email);
       } else {
@@ -69,7 +68,7 @@ function Login() {
       }
 
       toast.success('Successfully logged in!');
-      navigate('/dashboard');
+      navigate('/user-info');
     } catch (error) {
       toast.error('Invalid email or password');
     } finally {
@@ -79,7 +78,7 @@ function Login() {
 
   const handleSkip = () => {
     toast('Continuing as guest');
-    navigate('/dashboard');
+    navigate('/user-info');
   };
 
   const handleGoogleSignIn = () => {

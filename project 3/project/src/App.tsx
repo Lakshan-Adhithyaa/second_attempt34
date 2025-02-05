@@ -7,8 +7,15 @@ import Dashboard from './pages/Dashboard';
 import WorkoutCategories from './pages/WorkoutCategories';
 import Profile from './pages/Profile';
 import UserInfo from './pages/UserInfo';
+import Navbar from './components/Navbar';
 
 function App() {
+  // Check if we're on a page that should show the navbar
+  const shouldShowNavbar = (pathname: string) => {
+    const noNavbarRoutes = ['/', '/login', '/signup', '/user-info'];
+    return !noNavbarRoutes.includes(pathname);
+  };
+
   return (
     <Router>
       <Routes>
@@ -21,8 +28,9 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      {shouldShowNavbar(window.location.pathname) && <Navbar />}
     </Router>
   );
 }
 
-export default App
+export default App;

@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import WorkoutCategories from './pages/WorkoutCategories';
 import UserInfo from './pages/UserInfo';
 import Profile from './pages/Profile';
+import AICoach from './pages/AICoach';
 import Navbar from './components/Navbar';
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/categories" element={<WorkoutCategories />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/ai-chat" element={<AICoach />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       {shouldShowNavbar(window.location.pathname) && <Navbar />}

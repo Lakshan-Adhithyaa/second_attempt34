@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, Dumbbell, LayoutGrid, User } from 'lucide-react';
+import { Home, Calendar, LayoutGrid, User } from 'lucide-react';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -16,10 +16,10 @@ function Navbar() {
       description: 'View your workout summary and daily progress'
     },
     { 
-      icon: Dumbbell, 
-      path: '/workouts', 
-      label: 'Workouts',
-      description: 'Access your personalized workout routines'
+      icon: Calendar, 
+      path: '/calendar', 
+      label: 'Calendar',
+      description: 'Schedule and track your workouts'
     },
     { 
       icon: LayoutGrid, 

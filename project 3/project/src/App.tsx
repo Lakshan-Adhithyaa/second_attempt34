@@ -7,10 +7,10 @@ import Dashboard from './pages/Dashboard';
 import WorkoutCategories from './pages/WorkoutCategories';
 import Profile from './pages/Profile';
 import UserInfo from './pages/UserInfo';
+import Calendar from './pages/Calendar';
 import Navbar from './components/Navbar';
 
 function App() {
-  // Check if we're on a page that should show the navbar
   const shouldShowNavbar = (pathname: string) => {
     const noNavbarRoutes = ['/', '/login', '/signup', '/user-info'];
     return !noNavbarRoutes.includes(pathname);
@@ -25,6 +25,7 @@ function App() {
         <Route path="/user-info" element={<UserInfo />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/categories" element={<WorkoutCategories />} />
+        <Route path="/calendar" element={<Calendar />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

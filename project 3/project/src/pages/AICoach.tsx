@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Bot, User, ChevronDown, Trash2, Clock } from 'lucide-react';
+import Navbar from '../components/Navbar';
 
 interface Message {
   id: string;
@@ -80,7 +81,7 @@ function AICoach() {
   return (
     <div className="min-h-screen bg-black">
       <div 
-        className="min-h-screen flex flex-col pb-24 lg:pb-16"
+        className="min-h-screen flex flex-col"
         style={{
           backgroundImage: 'url("https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80")',
           backgroundPosition: 'center',
@@ -195,6 +196,8 @@ function AICoach() {
             </form>
           </div>
         </main>
+
+        <Navbar />
       </div>
     </div>
   );

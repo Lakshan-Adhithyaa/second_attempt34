@@ -80,7 +80,7 @@ function AICoach() {
   return (
     <div className="min-h-screen bg-black">
       <div 
-        className="min-h-screen flex flex-col"
+        className="min-h-screen flex flex-col pb-24 lg:pb-16"
         style={{
           backgroundImage: 'url("https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80")',
           backgroundPosition: 'center',

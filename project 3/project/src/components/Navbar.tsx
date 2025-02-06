@@ -4,8 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Home, 
   Dumbbell, 
-  MessageSquare, 
-  Trophy, 
+  MessageSquare,
   User,
   HelpCircle,
   Settings,
@@ -17,7 +16,6 @@ function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [hoveredItem, setHoveredItem] = useState<number | null>(null);
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   const navItems = [
     { 
@@ -37,12 +35,6 @@ function Navbar() {
       path: '/ai-chat', 
       label: 'AI Coach',
       description: 'Get personalized workout advice'
-    },
-    { 
-      icon: Trophy, 
-      path: '/leaderboard', 
-      label: 'Leaderboard',
-      description: 'See top performers and rankings'
     },
     { 
       icon: User, 
@@ -141,14 +133,6 @@ function Navbar() {
     }
   };
 
-  const handleProfileClick = () => {
-    setShowProfileMenu(!showProfileMenu);
-  };
-
-  const handleHelpSupport = () => {
-    navigate('/help-support');
-  };
-
   return (
     <motion.nav 
       className="fixed bottom-0 w-full px-6 pb-6 pt-4 z-50"
@@ -205,13 +189,7 @@ function Navbar() {
                 </AnimatePresence>
 
                 <motion.button
-                  onClick={() => {
-                    if (item.path === '/profile') {
-                      handleProfileClick();
-                    } else {
-                      navigate(item.path);
-                    }
-                  }}
+                  onClick={() => navigate(item.path)}
                   className="relative flex flex-col items-center"
                   variants={itemAnimation}
                   whileHover={{ scale: 1.1 }}
@@ -256,48 +234,6 @@ function Navbar() {
             );
           })}
         </motion.div>
-
-        {/* Profile Menu */}
-        <AnimatePresence>
-          {showProfileMenu && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              className="absolute bottom-full mb-4 right-0 w-64 bg-black/90 backdrop-blur-lg rounded-lg border border-white/10 overflow-hidden"
-            >
-              <div className="p-4 border-b border-white/10">
-                <div className="text-white font-medium">John Doe</div>
-                <div className="text-gray-400 text-sm">john@example.com</div>
-              </div>
-              <div className="p-2">
-                <button
-                  onClick={handleHelpSupport}
-                  className="w-full flex items-center space-x-3 p-3 text-gray-300 hover:bg-white/10 rounded-lg transition-colors"
-                >
-                  <HelpCircle size={18} />
-                  <span>Help & Support</span>
-                  <ChevronRight size={16} className="ml-auto" />
-                </button>
-                <button
-                  onClick={() => navigate('/settings')}
-                  className="w-full flex items-center space-x-3 p-3 text-gray-300 hover:bg-white/10 rounded-lg transition-colors"
-                >
-                  <Settings size={18} />
-                  <span>Settings</span>
-                  <ChevronRight size={16} className="ml-auto" />
-                </button>
-                <button
-                  onClick={() => navigate('/login')}
-                  className="w-full flex items-center space-x-3 p-3 text-red-500 hover:bg-white/10 rounded-lg transition-colors"
-                >
-                  <LogOut size={18} />
-                  <span>Logout</span>
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </motion.nav>
   );

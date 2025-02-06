@@ -44,11 +44,12 @@ function Navbar() {
     }
   ];
 
-  // Floating animation
   const floatingAnimation = {
-    y: [0, -10, 0],
+    y: [0, -8, 0],
+    scale: [1, 1.1, 1],
+    rotate: [0, 5, 0],
     transition: {
-      duration: 2,
+      duration: 3,
       repeat: Infinity,
       ease: "easeInOut"
     }
@@ -92,11 +93,12 @@ function Navbar() {
   };
 
   const tooltipAnimation = {
-    initial: { opacity: 0, y: 20, scale: 0.95 },
+    initial: { opacity: 0, y: 20, scale: 0.95, rotateX: -30 },
     animate: { 
       opacity: 1, 
       y: 0, 
       scale: 1,
+      rotateX: 0,
       transition: {
         type: "spring",
         stiffness: 300,
@@ -107,6 +109,7 @@ function Navbar() {
       opacity: 0,
       y: 10,
       scale: 0.95,
+      rotateX: 30,
       transition: {
         duration: 0.2
       }
@@ -114,10 +117,11 @@ function Navbar() {
   };
 
   const labelAnimation = {
-    initial: { opacity: 0, y: -10 },
+    initial: { opacity: 0, y: -10, scale: 0.8 },
     animate: { 
       opacity: 1, 
       y: 0,
+      scale: 1,
       transition: {
         type: "spring",
         stiffness: 500,
@@ -127,19 +131,31 @@ function Navbar() {
     exit: { 
       opacity: 0, 
       y: -10,
+      scale: 0.8,
       transition: {
         duration: 0.2
       }
     }
   };
 
+  const shimmerAnimation = {
+    initial: { x: '-100%' },
+    animate: {
+      x: '100%',
+      transition: {
+        repeat: Infinity,
+        duration: 2,
+        ease: "linear"
+      }
+    }
+  };
+
   return (
     <motion.nav 
-      className="fixed bottom-0 w-full px-6 pb-6 pt-4 z-50"
+      className="fixed bottom-0 w-full px-6 pb-4 pt-2 lg:pb-2 lg:pt-1 z-50"
       {...navbarAnimation}
     >
       <div className="relative">
-        {/* Enhanced glowing background effect */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-black/40 backdrop-blur-xl rounded-2xl">
           <motion.div
             className="absolute inset-0 bg-gradient-to-r from-red-500/10 via-transparent to-red-500/10"
@@ -154,12 +170,11 @@ function Navbar() {
           />
         </div>
         
-        {/* Navigation items */}
         <motion.div 
           variants={containerAnimation}
           initial="hidden"
           animate="show"
-          className="relative flex justify-around items-center bg-gradient-to-r from-black/80 via-black/60 to-black/80 rounded-2xl p-4 border border-white/10"
+          className="relative flex justify-around items-center bg-gradient-to-r from-black/80 via-black/60 to-black/80 rounded-2xl p-2 lg:p-1 border border-white/10"
         >
           {navItems.map((item, index) => {
             const isActive = location.pathname === item.path;
@@ -181,8 +196,21 @@ function Navbar() {
                       exit="exit"
                       className="absolute bottom-full mb-2 w-48 p-2 bg-gradient-to-br from-black/95 to-black/85 backdrop-blur-lg rounded-lg border border-red-500/20 shadow-lg"
                     >
-                      <div className="text-red-400 text-sm font-medium mb-1">{item.label}</div>
-                      <div className="text-gray-300 text-xs">{item.description}</div>
+                      <motion.div 
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="text-red-400 text-sm font-medium mb-1"
+                      >
+                        {item.label}
+                      </motion.div>
+                      <motion.div 
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-gray-300 text-xs"
+                      >
+                        {item.description}
+                      </motion.div>
                       <div className="absolute bottom-0 left-1/2 -mb-1 transform -translate-x-1/2 w-2 h-2 bg-black rotate-45 border-r border-b border-red-500/20" />
                     </motion.div>
                   )}
@@ -201,7 +229,14 @@ function Navbar() {
                       layoutId="navGlow"
                       className="absolute inset-0 bg-gradient-to-r from-red-500/20 via-red-500/40 to-red-500/20 rounded-full blur-xl opacity-75"
                       transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                    />
+                    >
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                        variants={shimmerAnimation}
+                        initial="initial"
+                        animate="animate"
+                      />
+                    </motion.div>
                   )}
                   <motion.div
                     className={`relative p-3 rounded-xl transition-colors overflow-hidden ${
@@ -209,6 +244,10 @@ function Navbar() {
                         ? 'bg-gradient-to-tr from-red-600 to-red-500 text-white' 
                         : 'text-gray-400 hover:text-red-400'
                     }`}
+                    whileHover={{
+                      rotate: [0, -10, 10, 0],
+                      transition: { duration: 0.5 }
+                    }}
                   >
                     <Icon size={20} className="relative z-10" />
                   </motion.div>

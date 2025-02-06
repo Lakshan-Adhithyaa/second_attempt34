@@ -8,7 +8,6 @@ import WorkoutCategories from './pages/WorkoutCategories';
 import UserInfo from './pages/UserInfo';
 import Profile from './pages/Profile';
 import AICoach from './pages/AICoach';
-import Navbar from './components/Navbar';
 
 function App() {
   const shouldShowNavbar = (pathname: string) => {
@@ -29,7 +28,6 @@ function App() {
         <Route path="/ai-chat" element={<AICoach />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      {shouldShowNavbar(window.location.pathname) && <Navbar />}
     </Router>
   );
 }

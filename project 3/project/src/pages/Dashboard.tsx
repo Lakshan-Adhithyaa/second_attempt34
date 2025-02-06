@@ -7,6 +7,7 @@ import {
   Trophy, Heart, Plus, Bell, X, Save
 } from 'lucide-react';
 import { toast, Toaster } from 'react-hot-toast';
+import Navbar from '../components/Navbar';
 
 interface Streak {
   current: number;
@@ -51,7 +52,7 @@ function Dashboard() {
     <div className="min-h-screen bg-black">
       <Toaster position="top-center" />
       <div 
-        className="min-h-screen flex flex-col pb-24 lg:pb-16"
+        className="min-h-screen flex flex-col"
         style={{
           backgroundImage: 'url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80")',
           backgroundPosition: 'center',
@@ -191,26 +192,7 @@ function Dashboard() {
           </section>
         </main>
 
-        <nav className="bg-black/90 backdrop-blur-sm border-t border-white/10 p-4 relative z-10">
-          <div className="flex justify-around items-center">
-            {[
-              { icon: Home, path: '/dashboard', active: true },
-              { icon: Dumbbell, path: '/workouts', active: false },
-              { icon: LayoutGrid, path: '/categories', active: false },
-              { icon: User, path: '/profile', active: false }
-            ].map((item, index) => (
-              <motion.button
-                key={index}
-                onClick={() => navigate(item.path)}
-                className={item.active ? 'text-red-500' : 'text-white/60 hover:text-red-500'}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <item.icon size={24} />
-              </motion.button>
-            ))}
-          </div>
-        </nav>
+        <Navbar />
       </div>
     </div>
   );

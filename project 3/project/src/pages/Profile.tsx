@@ -133,7 +133,7 @@ function Profile() {
     <div className="min-h-screen bg-black">
       <Toaster position="top-center" />
       <div 
-        className="min-h-screen flex flex-col"
+        className="min-h-screen flex flex-col pb-24 lg:pb-16"
         style={{
           backgroundImage: 'url("https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80")',
           backgroundPosition: 'center',

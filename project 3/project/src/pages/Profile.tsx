@@ -8,6 +8,7 @@ import {
   Camera, Trash2, Save, X, Lock, Mail, Phone, HelpCircle,
   MessageSquare, FileText, Book, ExternalLink
 } from 'lucide-react';
+import Navbar from '../components/Navbar';
 
 interface UserProfile {
   name: string;
@@ -133,7 +134,7 @@ function Profile() {
     <div className="min-h-screen bg-black">
       <Toaster position="top-center" />
       <div 
-        className="min-h-screen flex flex-col pb-24 lg:pb-16"
+        className="min-h-screen flex flex-col"
         style={{
           backgroundImage: 'url("https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80")',
           backgroundPosition: 'center',
@@ -440,135 +441,7 @@ function Profile() {
           </motion.button>
         </main>
 
-        {/* Navigation Bar */}
-        <nav className="bg-black/90 backdrop-blur-sm border-t border-white/10 p-4 relative z-10">
-          <div className="flex justify-around items-center">
-            {[
-              { icon: Home, path: '/dashboard' },
-              { icon: Dumbbell, path: '/workouts' },
-              { icon: LayoutGrid, path: '/categories' },
-              { icon: User, path: '/profile', active: true }
-            ].map((item, index) => (
-              <motion.button
-                key={index}
-                onClick={() => navigate(item.path)}
-                className={item.active ? 'text-red-500' : 'text-white/60 hover:text-red-500'}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <item.icon size={24} />
-              </motion.button>
-            ))}
-          </div>
-        </nav>
-
-        {/* Change Password Modal */}
-        <AnimatePresence>
-          {showChangePassword && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-            >
-              <motion.div
-                initial={{ scale: 0.95 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0.95 }}
-                className="bg-gray-900 rounded-lg p-6 w-full max-w-md"
-              >
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-xl font-semibold text-white">Change Password</h3>
-                  <button
-                    onClick={() => setShowChangePassword(false)}
-                    className="text-gray-400 hover:text-white"
-                  >
-                    <X size={24} />
-                  </button>
-                </div>
-                <form onSubmit={handleChangePassword} className="space-y-4">
-                  <div>
-                    <label className="block text-gray-400 mb-2">Current Password</label>
-                    <input
-                      type="password"
-                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-gray-400 mb-2">New Password</label>
-                    <input
-                      type="password"
-                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-gray-400 mb-2">Confirm New Password</label>
-                    <input
-                      type="password"
-                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors"
-                  >
-                    Update Password
-                  </button>
-                </form>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* FAQ Modal */}
-        <AnimatePresence>
-          {showHelpModal && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-            >
-              <motion.div
-                initial={{ scale: 0.95 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0.95 }}
-                className="bg-gray-900 rounded-lg p-6 w-full max-w-md max-h-[80vh] overflow-y-auto"
-              >
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-xl font-semibold text-white">Frequently Asked Questions</h3>
-                  <button
-                    onClick={() => setShowHelpModal(false)}
-                    className="text-gray-400 hover:text-white"
-                  >
-                    <X size={24} />
-                  </button>
-                </div>
-                
-                <div className="space-y-6">
-                  {faqItems.map((item, index) => (
-                    <div key={index} className="border-b border-white/10 pb-4">
-                      <h4 className="text-white font-semibold mb-2">{item.question}</h4>
-                      <p className="text-gray-400">{item.answer}</p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-6 text-center">
-                  <p className="text-gray-400 text-sm">
-                    Still have questions?{' '}
-                    <button
-                      onClick={handleContactSupport}
-                      className="text-red-500 hover:text-red-400"
-                    >
-                      Contact Support
-                    </button>
-                  </p>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <Navbar />
       </div>
     </div>
   );

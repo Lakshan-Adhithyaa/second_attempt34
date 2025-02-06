@@ -5,7 +5,8 @@ import { toast, Toaster } from 'react-hot-toast';
 import { 
   Home, Dumbbell, LayoutGrid, User, Settings, Award, 
   Calendar, Bell, ChevronRight, Edit2, LogOut, Flame,
-  Camera, Trash2, Save, X, Lock, Mail, Phone
+  Camera, Trash2, Save, X, Lock, Mail, Phone, HelpCircle,
+  MessageSquare, FileText, Book, ExternalLink
 } from 'lucide-react';
 
 interface UserProfile {
@@ -24,6 +25,7 @@ function Profile() {
   const [avatar, setAvatar] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
 
   const [profile, setProfile] = useState<UserProfile>({
     name: 'John Doe',
@@ -99,6 +101,33 @@ function Profile() {
     toast.success('Logged out successfully');
     navigate('/login');
   };
+
+  const handleContactSupport = () => {
+    window.location.href = 'mailto:support@fiteverywhere.com';
+  };
+
+  const handleOpenFAQ = () => {
+    setShowHelpModal(true);
+  };
+
+  const faqItems = [
+    {
+      question: 'How do I track my workouts?',
+      answer: 'You can track your workouts by going to the Dashboard and clicking on "Start Workout". The app will automatically record your progress.'
+    },
+    {
+      question: 'Can I customize my workout plan?',
+      answer: 'Yes! Go to the Categories section and choose your preferred workout types. You can then create a personalized plan based on your selections.'
+    },
+    {
+      question: 'How do I update my profile information?',
+      answer: 'Click the edit button (pencil icon) in your profile page to modify your personal information, then click save to confirm changes.'
+    },
+    {
+      question: 'Is my data secure?',
+      answer: 'Yes, we use industry-standard encryption to protect your personal information. You can also enable Privacy Mode in settings for additional security.'
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-black">
@@ -335,6 +364,51 @@ function Profile() {
             </div>
           </motion.div>
 
+          {/* Help & Support Section */}
+          <motion.div 
+            className="bg-white/10 rounded-lg p-6 mb-8 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <h2 className="text-xl font-semibold text-white mb-4">Help & Support</h2>
+            <div className="space-y-4">
+              <button
+                onClick={handleOpenFAQ}
+                className="w-full flex items-center justify-between p-4 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
+              >
+                <div className="flex items-center space-x-3">
+                  <Book className="text-red-500" />
+                  <span className="text-white">FAQ</span>
+                </div>
+                <ChevronRight className="text-gray-400" />
+              </button>
+
+              <button
+                onClick={handleContactSupport}
+                className="w-full flex items-center justify-between p-4 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
+              >
+                <div className="flex items-center space-x-3">
+                  <MessageSquare className="text-red-500" />
+                  <span className="text-white">Contact Support</span>
+                </div>
+                <ChevronRight className="text-gray-400" />
+              </button>
+
+              <a
+                href="https://docs.fiteverywhere.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-between p-4 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
+              >
+                <div className="flex items-center space-x-3">
+                  <FileText className="text-red-500" />
+                  <span className="text-white">Documentation</span>
+                </div>
+                <ExternalLink className="text-gray-400" />
+              </a>
+            </div>
+          </motion.div>
+
           {/* Security */}
           <motion.div 
             className="bg-white/10 rounded-lg p-6 mb-8 backdrop-blur-sm"
@@ -441,6 +515,56 @@ function Profile() {
                     Update Password
                   </button>
                 </form>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* FAQ Modal */}
+        <AnimatePresence>
+          {showHelpModal && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            >
+              <motion.div
+                initial={{ scale: 0.95 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0.95 }}
+                className="bg-gray-900 rounded-lg p-6 w-full max-w-md max-h-[80vh] overflow-y-auto"
+              >
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl font-semibold text-white">Frequently Asked Questions</h3>
+                  <button
+                    onClick={() => setShowHelpModal(false)}
+                    className="text-gray-400 hover:text-white"
+                  >
+                    <X size={24} />
+                  </button>
+                </div>
+                
+                <div className="space-y-6">
+                  {faqItems.map((item, index) => (
+                    <div key={index} className="border-b border-white/10 pb-4">
+                      <h4 className="text-white font-semibold mb-2">{item.question}</h4>
+                      <p className="text-gray-400">{item.answer}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-6 text-center">
+                  <p className="text-gray-400 text-sm">
+                    Still have questions?{' '}
+                    <button
+                      onClick={handleContactSupport}
+                      className="text-red-500 hover:text-red-400"
+                    >
+                      Contact Support
+                    </button>
+                  </p>
+                </div>
               </motion.div>
             </motion.div>
           )}

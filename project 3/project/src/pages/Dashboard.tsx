@@ -51,7 +51,7 @@ function Dashboard() {
     <div className="min-h-screen bg-black">
       <Toaster position="top-center" />
       <div 
-        className="min-h-screen flex flex-col"
+        className="min-h-screen flex flex-col pb-24 lg:pb-16"
         style={{
           backgroundImage: 'url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80")',
           backgroundPosition: 'center',

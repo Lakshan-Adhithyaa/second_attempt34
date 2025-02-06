@@ -5,9 +5,8 @@ import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Dashboard from './pages/Dashboard';
 import WorkoutCategories from './pages/WorkoutCategories';
-import Profile from './pages/Profile';
 import UserInfo from './pages/UserInfo';
-import Calendar from './pages/Calendar';
+import Profile from './pages/Profile';
 import Navbar from './components/Navbar';
 
 function App() {
@@ -25,7 +24,6 @@ function App() {
         <Route path="/user-info" element={<UserInfo />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/categories" element={<WorkoutCategories />} />
-        <Route path="/calendar" element={<Calendar />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

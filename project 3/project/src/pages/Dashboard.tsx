@@ -2,14 +2,27 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Home, Dumbbell, LayoutGrid, User, Calendar,
+  Home, Dumbbell, LayoutGrid, User,
   ChevronRight, Play, CheckCircle, Clock, Flame,
-  Trophy, Heart
+  Trophy, Heart, Plus, Bell, X, Save
 } from 'lucide-react';
+import { toast, Toaster } from 'react-hot-toast';
+import Navbar from '../components/Navbar';
+
+interface Streak {
+  current: number;
+  best: number;
+  lastWorkout: string | null;
+}
 
 function Dashboard() {
   const navigate = useNavigate();
   const [selectedTask, setSelectedTask] = useState<number | null>(null);
+  const [streak, setStreak] = useState<Streak>({
+    current: 0,
+    best: 0,
+    lastWorkout: null
+  });
 
   const workoutTasks = [
     {
@@ -37,6 +50,7 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen bg-black">
+      <Toaster position="top-center" />
       <div 
         className="min-h-screen flex flex-col"
         style={{
@@ -57,18 +71,11 @@ function Dashboard() {
               <h1 className="text-2xl font-bold text-white mb-2">Welcome back!</h1>
               <p className="text-gray-400">Let's crush today's goals</p>
             </div>
-            <motion.div
-              className="bg-red-600/20 p-2 rounded-full"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <Calendar className="w-6 h-6 text-white" />
-            </motion.div>
           </motion.div>
           
           <div className="grid grid-cols-2 gap-4 mb-8">
             {[
-              { title: 'Daily Goal', value: '2/5', subtitle: 'workouts completed', icon: Trophy },
+              { title: 'Current Streak', value: `${streak.current} days`, subtitle: 'Best: ' + streak.best + ' days', icon: Trophy },
               { title: 'Calories', value: '320', subtitle: 'burned today', icon: Flame }
             ].map((stat, index) => (
               <motion.div
@@ -82,7 +89,7 @@ function Dashboard() {
               >
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-white font-semibold">{stat.title}</h3>
-                  <stat.icon className="w-5 h-5 text-red-500" />
+                  <stat.icon className="text-red-500 w-5 h-5" />
                 </div>
                 <p className="text-2xl text-white font-bold mb-1">{stat.value}</p>
                 <p className="text-gray-400 text-sm">{stat.subtitle}</p>
@@ -183,71 +190,9 @@ function Dashboard() {
               ))}
             </div>
           </section>
-
-          <section>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-white">Quick Start</h2>
-              <motion.button
-                className="text-red-500 text-sm flex items-center"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                More
-                <ChevronRight className="w-4 h-4 ml-1" />
-              </motion.button>
-            </div>
-
-            <motion.div
-              className="bg-white/10 p-6 rounded-lg backdrop-blur-sm hover:bg-white/20 transition-colors cursor-pointer"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="text-white font-semibold mb-2">Full Body Strength</h3>
-                  <div className="flex space-x-4 text-sm text-gray-300">
-                    <span className="flex items-center">
-                      <Clock className="w-4 h-4 mr-1" />
-                      45 mins
-                    </span>
-                    <span className="flex items-center">
-                      <Trophy className="w-4 h-4 mr-1" />
-                      Intermediate
-                    </span>
-                  </div>
-                </div>
-                <motion.button
-                  className="bg-red-600 p-3 rounded-full"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <Play className="w-5 h-5 text-white" />
-                </motion.button>
-              </div>
-            </motion.div>
-          </section>
         </main>
 
-        <nav className="bg-black/90 backdrop-blur-sm border-t border-white/10 p-4 relative z-10">
-          <div className="flex justify-around items-center">
-            {[
-              { icon: Home, path: '/dashboard', active: true },
-              { icon: Dumbbell, path: '/workouts', active: false },
-              { icon: LayoutGrid, path: '/categories', active: false },
-              { icon: User, path: '/profile', active: false }
-            ].map((item, index) => (
-              <motion.button
-                key={index}
-                onClick={() => navigate(item.path)}
-                className={item.active ? 'text-red-500' : 'text-white/60 hover:text-red-500'}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <item.icon size={24} />
-              </motion.button>
-            ))}
-          </div>
-        </nav>
+        <Navbar />
       </div>
     </div>
   );

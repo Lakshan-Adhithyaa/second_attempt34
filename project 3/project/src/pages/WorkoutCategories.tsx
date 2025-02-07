@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Home, Dumbbell, LayoutGrid, User, Clock, Flame, Target, ChevronRight, Play, Heart, Calendar, Trophy, Cog as Yoga, FileWarning as Running, Bike, SwissFranc as Swim, Brain, Music } from 'lucide-react';
+import Navbar from '../components/Navbar';
 
 function WorkoutCategories() {
   const navigate = useNavigate();
@@ -341,26 +342,7 @@ function WorkoutCategories() {
           </div>
         </main>
 
-        <nav className="bg-black/90 backdrop-blur-sm border-t border-white/10 p-4 relative z-10">
-          <div className="flex justify-around items-center">
-            {[
-              { icon: Home, path: '/dashboard', active: false },
-              { icon: Dumbbell, path: '/workouts', active: false },
-              { icon: LayoutGrid, path: '/categories', active: true },
-              { icon: User, path: '/profile', active: false }
-            ].map((item, index) => (
-              <motion.button
-                key={index}
-                onClick={() => navigate(item.path)}
-                className={item.active ? 'text-red-500' : 'text-white/60 hover:text-red-500'}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <item.icon size={24} />
-              </motion.button>
-            ))}
-          </div>
-        </nav>
+        <Navbar />
       </div>
     </div>
   );

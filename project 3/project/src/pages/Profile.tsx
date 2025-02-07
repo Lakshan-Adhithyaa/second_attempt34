@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast, Toaster } from 'react-hot-toast';
+import { supabase } from '../lib/supabase-client';
 import { 
   Home, Dumbbell, LayoutGrid, User, Settings, Award, 
   Calendar, Bell, ChevronRight, Edit2, LogOut, Flame,
-  Camera, Trash2, Save, X, Lock, Mail, Phone
+  Camera, Trash2, Save, X, Lock, Mail, Phone, HelpCircle,
+  MessageSquare, FileText, Book, ExternalLink
 } from 'lucide-react';
+import Navbar from '../components/Navbar';
 
 interface UserProfile {
   name: string;
@@ -24,6 +27,7 @@ function Profile() {
   const [avatar, setAvatar] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
 
   const [profile, setProfile] = useState<UserProfile>({
     name: 'John Doe',
@@ -95,10 +99,44 @@ function Profile() {
     setShowChangePassword(false);
   };
 
-  const handleLogout = () => {
-    toast.success('Logged out successfully');
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      toast.success('Logged out successfully');
+      navigate('/login');
+    } catch (error) {
+      toast.error('Failed to log out');
+    }
   };
+
+  const handleContactSupport = () => {
+    window.location.href = 'mailto:support@fiteverywhere.com';
+  };
+
+  const handleOpenFAQ = () => {
+    setShowHelpModal(true);
+  };
+
+  const faqItems = [
+    {
+      question: 'How do I track my workouts?',
+      answer: 'You can track your workouts by going to the Dashboard and clicking on "Start Workout". The app will automatically record your progress.'
+    },
+    {
+      question: 'Can I customize my workout plan?',
+      answer: 'Yes! Go to the Categories section and choose your preferred workout types. You can then create a personalized plan based on your selections.'
+    },
+    {
+      question: 'How do I update my profile information?',
+      answer: 'Click the edit button (pencil icon) in your profile page to modify your personal information, then click save to confirm changes.'
+    },
+    {
+      question: 'Is my data secure?',
+      answer: 'Yes, we use industry-standard encryption to protect your personal information. You can also enable Privacy Mode in settings for additional security.'
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-black">
@@ -335,6 +373,51 @@ function Profile() {
             </div>
           </motion.div>
 
+          {/* Help & Support Section */}
+          <motion.div 
+            className="bg-white/10 rounded-lg p-6 mb-8 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <h2 className="text-xl font-semibold text-white mb-4">Help & Support</h2>
+            <div className="space-y-4">
+              <button
+                onClick={handleOpenFAQ}
+                className="w-full flex items-center justify-between p-4 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
+              >
+                <div className="flex items-center space-x-3">
+                  <Book className="text-red-500" />
+                  <span className="text-white">FAQ</span>
+                </div>
+                <ChevronRight className="text-gray-400" />
+              </button>
+
+              <button
+                onClick={handleContactSupport}
+                className="w-full flex items-center justify-between p-4 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
+              >
+                <div className="flex items-center space-x-3">
+                  <MessageSquare className="text-red-500" />
+                  <span className="text-white">Contact Support</span>
+                </div>
+                <ChevronRight className="text-gray-400" />
+              </button>
+
+              <a
+                href="https://docs.fiteverywhere.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-between p-4 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
+              >
+                <div className="flex items-center space-x-3">
+                  <FileText className="text-red-500" />
+                  <span className="text-white">Documentation</span>
+                </div>
+                <ExternalLink className="text-gray-400" />
+              </a>
+            </div>
+          </motion.div>
+
           {/* Security */}
           <motion.div 
             className="bg-white/10 rounded-lg p-6 mb-8 backdrop-blur-sm"
@@ -366,85 +449,7 @@ function Profile() {
           </motion.button>
         </main>
 
-        {/* Navigation Bar */}
-        <nav className="bg-black/90 backdrop-blur-sm border-t border-white/10 p-4 relative z-10">
-          <div className="flex justify-around items-center">
-            {[
-              { icon: Home, path: '/dashboard' },
-              { icon: Dumbbell, path: '/workouts' },
-              { icon: LayoutGrid, path: '/categories' },
-              { icon: User, path: '/profile', active: true }
-            ].map((item, index) => (
-              <motion.button
-                key={index}
-                onClick={() => navigate(item.path)}
-                className={item.active ? 'text-red-500' : 'text-white/60 hover:text-red-500'}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <item.icon size={24} />
-              </motion.button>
-            ))}
-          </div>
-        </nav>
-
-        {/* Change Password Modal */}
-        <AnimatePresence>
-          {showChangePassword && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-            >
-              <motion.div
-                initial={{ scale: 0.95 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0.95 }}
-                className="bg-gray-900 rounded-lg p-6 w-full max-w-md"
-              >
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-xl font-semibold text-white">Change Password</h3>
-                  <button
-                    onClick={() => setShowChangePassword(false)}
-                    className="text-gray-400 hover:text-white"
-                  >
-                    <X size={24} />
-                  </button>
-                </div>
-                <form onSubmit={handleChangePassword} className="space-y-4">
-                  <div>
-                    <label className="block text-gray-400 mb-2">Current Password</label>
-                    <input
-                      type="password"
-                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-gray-400 mb-2">New Password</label>
-                    <input
-                      type="password"
-                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-gray-400 mb-2">Confirm New Password</label>
-                    <input
-                      type="password"
-                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors"
-                  >
-                    Update Password
-                  </button>
-                </form>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <Navbar />
       </div>
     </div>
   );

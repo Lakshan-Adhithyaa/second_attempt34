@@ -4,7 +4,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast, { Toaster } from 'react-hot-toast';
 import { loginSchema } from '../lib/validation';
-import { auth } from '../lib/auth';
+import { supabase } from '../lib/supabase-client';
 import { z } from 'zod';
 
 type LoginForm = z.infer<typeof loginSchema>;
@@ -41,7 +41,6 @@ function Login() {
 
   const handleInputChange = (field: keyof LoginForm, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
@@ -54,14 +53,13 @@ function Login() {
 
     setIsLoading(true);
     try {
-      const { error } = await auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
       });
 
       if (error) throw error;
 
-      // Handle remember me logic here
       if (rememberMe) {
         localStorage.setItem('rememberedEmail', formData.email);
       } else {
@@ -69,7 +67,7 @@ function Login() {
       }
 
       toast.success('Successfully logged in!');
-      navigate('/dashboard');
+      navigate('/user-info');
     } catch (error) {
       toast.error('Invalid email or password');
     } finally {
@@ -79,15 +77,29 @@ function Login() {
 
   const handleSkip = () => {
     toast('Continuing as guest');
-    navigate('/dashboard');
+    navigate('/user-info');
   };
 
-  const handleGoogleSignIn = () => {
-    auth.signInWithOAuth({ provider: 'google' });
+  const handleGoogleSignIn = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+      });
+      if (error) throw error;
+    } catch (error) {
+      toast.error('Google sign in failed');
+    }
   };
 
-  const handleAppleSignIn = () => {
-    auth.signInWithOAuth({ provider: 'apple' });
+  const handleAppleSignIn = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'apple',
+      });
+      if (error) throw error;
+    } catch (error) {
+      toast.error('Apple sign in failed');
+    }
   };
 
   return (

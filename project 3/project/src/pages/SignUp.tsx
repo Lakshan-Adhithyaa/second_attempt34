@@ -4,7 +4,7 @@ import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast, { Toaster } from 'react-hot-toast';
 import { signupSchema } from '../lib/validation';
-import { auth } from '../lib/auth';
+import { supabase } from '../lib/supabase-client';
 import { z } from 'zod';
 
 type SignUpForm = z.infer<typeof signupSchema>;
@@ -54,8 +54,32 @@ function SignUp() {
 
     setIsLoading(true);
     try {
-      const { error } = await auth.signUp(formData);
-      if (error) throw error;
+      // Sign up the user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            full_name: formData.name,
+          },
+        },
+      });
+
+      if (authError) throw authError;
+
+      // Create user profile
+      if (authData.user) {
+        const { error: profileError } = await supabase
+          .from('user_profiles')
+          .insert([
+            {
+              id: authData.user.id,
+              full_name: formData.name,
+            },
+          ]);
+
+        if (profileError) throw profileError;
+      }
 
       toast.success('Account created successfully!');
       navigate('/user-info');

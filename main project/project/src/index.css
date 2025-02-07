@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-black;
+  }
+  
+  .dark {
+    @apply bg-black;
+  }
+
+  input {
+    @apply bg-transparent;
+  }
+
+  select {
+    @apply appearance-none bg-transparent border border-white/20 rounded-lg px-4 py-2 text-white cursor-pointer hover:border-red-500/50 focus:border-red-500 focus:outline-none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ef4444' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+  }
+
+  select option {
+    @apply bg-gray-900 text-white py-2;
+  }
+
+  /* Custom select styles for Firefox */
+  @-moz-document url-prefix() {
+    select {
+      @apply text-white bg-gray-900;
+    }
+  }
+
+  /* Shine effect */
+  .shine {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shine::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      45deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.1) 30%,
+      rgba(255, 255, 255, 0.2) 50%,
+      rgba(255, 255, 255, 0.1) 70%,
+      transparent 100%
+    );
+    transform: rotate(45deg);
+    animation: shine 3s infinite;
+  }
+
+  @keyframes shine {
+    0% {
+      transform: translateX(-100%) rotate(45deg);
+    }
+    100% {
+      transform: translateX(100%) rotate(45deg);
+    }
+  }
+
+  /* Custom dropdown styles */
+  .custom-select {
+    @apply relative;
+  }
+
+  .custom-select select {
+    @apply w-full bg-white/10 backdrop-blur-sm border-white/20 rounded-lg px-4 py-2 text-white appearance-none cursor-pointer transition-all duration-200;
+  }
+
+  .custom-select select:hover {
+    @apply border-red-500/50 bg-white/15;
+  }
+
+  .custom-select select:focus {
+    @apply border-red-500 ring-2 ring-red-500/20 outline-none;
+  }
+
+  .custom-select::after {
+    @apply absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none;
+    content: '';
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ef4444' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+  }
+}
+
+/* Custom styles for the red gradient overlay */
+.gradient-overlay {
+  background: linear-gradient(45deg, transparent 0%, rgba(220, 38, 38, 0.2) 100%);
+}

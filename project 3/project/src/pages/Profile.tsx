@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast, Toaster } from 'react-hot-toast';
+import { supabase } from '../lib/supabase-client';
 import { 
   Home, Dumbbell, LayoutGrid, User, Settings, Award, 
   Calendar, Bell, ChevronRight, Edit2, LogOut, Flame,
@@ -98,9 +99,16 @@ function Profile() {
     setShowChangePassword(false);
   };
 
-  const handleLogout = () => {
-    toast.success('Logged out successfully');
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      toast.success('Logged out successfully');
+      navigate('/login');
+    } catch (error) {
+      toast.error('Failed to log out');
+    }
   };
 
   const handleContactSupport = () => {

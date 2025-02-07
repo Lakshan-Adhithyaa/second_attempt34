@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+import { supabase } from '../lib/supabase-client';
+import { useAuth } from '../contexts/AuthContext';
 import { ChevronLeft, ChevronRight, User, Activity, Scale, Target, Calendar, Clock } from 'lucide-react';
 
 type FormStep = {
@@ -16,6 +19,7 @@ const steps: FormStep[] = [
 
 function UserInfo() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
     fullName: '',
@@ -33,11 +37,36 @@ function UserInfo() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(prev => prev + 1);
     } else {
-      navigate('/dashboard');
+      try {
+        if (!user) throw new Error('No user found');
+
+        const { error } = await supabase
+          .from('user_profiles')
+          .upsert({
+            id: user.id,
+            full_name: formData.fullName,
+            age: parseInt(formData.age),
+            gender: formData.gender,
+            height: parseFloat(formData.height),
+            weight: parseFloat(formData.weight),
+            fitness_goal: formData.fitnessGoal,
+            activity_level: formData.activityLevel,
+            workout_preference: formData.workoutPreference,
+            availability: formData.availability,
+            updated_at: new Date().toISOString()
+          });
+
+        if (error) throw error;
+
+        toast.success('Profile updated successfully');
+        navigate('/dashboard');
+      } catch (error) {
+        toast.error('Failed to update profile');
+      }
     }
   };
 

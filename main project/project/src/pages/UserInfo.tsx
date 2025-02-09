@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { supabase } from '../lib/supabase-client';
@@ -19,7 +19,7 @@ const steps: FormStep[] = [
 
 function UserInfo() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
     fullName: '',
@@ -32,12 +32,107 @@ function UserInfo() {
     workoutPreference: '',
     availability: [] as string[]
   });
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  useEffect(() => {
+    if (userProfile) {
+      // Auto-fill the form with existing profile data
+      setFormData({
+        fullName: userProfile.full_name || '',
+        age: userProfile.age?.toString() || '',
+        gender: userProfile.gender || '',
+        height: userProfile.height?.toString() || '',
+        weight: userProfile.weight?.toString() || '',
+        fitnessGoal: userProfile.fitness_goal || '',
+        activityLevel: userProfile.activity_level || '',
+        workoutPreference: userProfile.workout_preference || '',
+        availability: userProfile.availability || []
+      });
+    }
+  }, [userProfile]);
+
+  useEffect(() => {
+    if (user && userProfile) {
+      // Check if all required profile data is present
+      const requiredFields = ['full_name', 'age', 'gender', 'height', 'weight', 'fitness_goal', 'activity_level'];
+      const isProfileComplete = requiredFields.every(field => userProfile[field]);
+
+      if (isProfileComplete) {
+        navigate('/dashboard');
+      }
+    }
+  }, [user, userProfile, navigate]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  const validateStep = (step: number): boolean => {
+    const newErrors: { [key: string]: string } = {};
+    let isValid = true;
+
+    switch (step) {
+      case 0: // Personal Info
+        if (!formData.fullName.trim()) {
+          newErrors.fullName = 'Full name is required';
+          isValid = false;
+        }
+        if (!formData.age) {
+          newErrors.age = 'Age is required';
+          isValid = false;
+        } else if (parseInt(formData.age) < 13 || parseInt(formData.age) > 100) {
+          newErrors.age = 'Age must be between 13 and 100';
+          isValid = false;
+        }
+        if (!formData.gender) {
+          newErrors.gender = 'Gender is required';
+          isValid = false;
+        }
+        break;
+
+      case 1: // Body Stats
+        if (!formData.height) {
+          newErrors.height = 'Height is required';
+          isValid = false;
+        } else if (parseFloat(formData.height) < 100 || parseFloat(formData.height) > 250) {
+          newErrors.height = 'Height must be between 100 and 250 cm';
+          isValid = false;
+        }
+        if (!formData.weight) {
+          newErrors.weight = 'Weight is required';
+          isValid = false;
+        } else if (parseFloat(formData.weight) < 30 || parseFloat(formData.weight) > 300) {
+          newErrors.weight = 'Weight must be between 30 and 300 kg';
+          isValid = false;
+        }
+        break;
+
+      case 2: // Fitness Goals
+        if (!formData.fitnessGoal) {
+          newErrors.fitnessGoal = 'Fitness goal is required';
+          isValid = false;
+        }
+        if (!formData.activityLevel) {
+          newErrors.activityLevel = 'Activity level is required';
+          isValid = false;
+        }
+        break;
+    }
+
+    setErrors(newErrors);
+    return isValid;
   };
 
   const handleNext = async () => {
+    if (!validateStep(currentStep)) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
     if (currentStep < steps.length - 1) {
       setCurrentStep(prev => prev + 1);
     } else {
@@ -82,37 +177,58 @@ function UserInfo() {
         return (
           <div className="space-y-6">
             <div>
-              <label className="block text-gray-300 mb-2">Full Name</label>
+              <label className="block text-gray-300 mb-2">
+                Full Name <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 value={formData.fullName}
                 onChange={(e) => handleInputChange('fullName', e.target.value)}
-                className="w-full px-4 py-3 bg-white/10 rounded-lg border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-red-500"
+                className={`w-full px-4 py-3 bg-white/10 rounded-lg border ${
+                  errors.fullName ? 'border-red-500' : 'border-white/20'
+                } text-white placeholder-gray-400 focus:outline-none focus:border-red-500`}
                 placeholder="Enter your full name"
               />
+              {errors.fullName && (
+                <p className="mt-1 text-sm text-red-500">{errors.fullName}</p>
+              )}
             </div>
             <div>
-              <label className="block text-gray-300 mb-2">Age</label>
+              <label className="block text-gray-300 mb-2">
+                Age <span className="text-red-500">*</span>
+              </label>
               <input
                 type="number"
                 value={formData.age}
                 onChange={(e) => handleInputChange('age', e.target.value)}
-                className="w-full px-4 py-3 bg-white/10 rounded-lg border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-red-500"
+                className={`w-full px-4 py-3 bg-white/10 rounded-lg border ${
+                  errors.age ? 'border-red-500' : 'border-white/20'
+                } text-white placeholder-gray-400 focus:outline-none focus:border-red-500`}
                 placeholder="Enter your age"
               />
+              {errors.age && (
+                <p className="mt-1 text-sm text-red-500">{errors.age}</p>
+              )}
             </div>
             <div>
-              <label className="block text-gray-300 mb-2">Gender</label>
+              <label className="block text-gray-300 mb-2">
+                Gender <span className="text-red-500">*</span>
+              </label>
               <select
                 value={formData.gender}
                 onChange={(e) => handleInputChange('gender', e.target.value)}
-                className="w-full px-4 py-3 bg-white/10 rounded-lg border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-red-500"
+                className={`w-full px-4 py-3 bg-white/10 rounded-lg border ${
+                  errors.gender ? 'border-red-500' : 'border-white/20'
+                } text-white placeholder-gray-400 focus:outline-none focus:border-red-500`}
               >
                 <option value="">Select gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
                 <option value="other">Other</option>
               </select>
+              {errors.gender && (
+                <p className="mt-1 text-sm text-red-500">{errors.gender}</p>
+              )}
             </div>
           </div>
         );
@@ -121,24 +237,38 @@ function UserInfo() {
         return (
           <div className="space-y-6">
             <div>
-              <label className="block text-gray-300 mb-2">Height (cm)</label>
+              <label className="block text-gray-300 mb-2">
+                Height (cm) <span className="text-red-500">*</span>
+              </label>
               <input
                 type="number"
                 value={formData.height}
                 onChange={(e) => handleInputChange('height', e.target.value)}
-                className="w-full px-4 py-3 bg-white/10 rounded-lg border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-red-500"
+                className={`w-full px-4 py-3 bg-white/10 rounded-lg border ${
+                  errors.height ? 'border-red-500' : 'border-white/20'
+                } text-white placeholder-gray-400 focus:outline-none focus:border-red-500`}
                 placeholder="Enter your height in cm"
               />
+              {errors.height && (
+                <p className="mt-1 text-sm text-red-500">{errors.height}</p>
+              )}
             </div>
             <div>
-              <label className="block text-gray-300 mb-2">Weight (kg)</label>
+              <label className="block text-gray-300 mb-2">
+                Weight (kg) <span className="text-red-500">*</span>
+              </label>
               <input
                 type="number"
                 value={formData.weight}
                 onChange={(e) => handleInputChange('weight', e.target.value)}
-                className="w-full px-4 py-3 bg-white/10 rounded-lg border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-red-500"
+                className={`w-full px-4 py-3 bg-white/10 rounded-lg border ${
+                  errors.weight ? 'border-red-500' : 'border-white/20'
+                } text-white placeholder-gray-400 focus:outline-none focus:border-red-500`}
                 placeholder="Enter your weight in kg"
               />
+              {errors.weight && (
+                <p className="mt-1 text-sm text-red-500">{errors.weight}</p>
+              )}
             </div>
           </div>
         );
@@ -147,11 +277,15 @@ function UserInfo() {
         return (
           <div className="space-y-6">
             <div>
-              <label className="block text-gray-300 mb-2">Fitness Goal</label>
+              <label className="block text-gray-300 mb-2">
+                Fitness Goal <span className="text-red-500">*</span>
+              </label>
               <select
                 value={formData.fitnessGoal}
                 onChange={(e) => handleInputChange('fitnessGoal', e.target.value)}
-                className="w-full px-4 py-3 bg-white/10 rounded-lg border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-red-500"
+                className={`w-full px-4 py-3 bg-white/10 rounded-lg border ${
+                  errors.fitnessGoal ? 'border-red-500' : 'border-white/20'
+                } text-white placeholder-gray-400 focus:outline-none focus:border-red-500`}
               >
                 <option value="">Select your goal</option>
                 <option value="weight-loss">Weight Loss</option>
@@ -159,13 +293,20 @@ function UserInfo() {
                 <option value="endurance">Endurance</option>
                 <option value="flexibility">Flexibility</option>
               </select>
+              {errors.fitnessGoal && (
+                <p className="mt-1 text-sm text-red-500">{errors.fitnessGoal}</p>
+              )}
             </div>
             <div>
-              <label className="block text-gray-300 mb-2">Activity Level</label>
+              <label className="block text-gray-300 mb-2">
+                Activity Level <span className="text-red-500">*</span>
+              </label>
               <select
                 value={formData.activityLevel}
                 onChange={(e) => handleInputChange('activityLevel', e.target.value)}
-                className="w-full px-4 py-3 bg-white/10 rounded-lg border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-red-500"
+                className={`w-full px-4 py-3 bg-white/10 rounded-lg border ${
+                  errors.activityLevel ? 'border-red-500' : 'border-white/20'
+                } text-white placeholder-gray-400 focus:outline-none focus:border-red-500`}
               >
                 <option value="">Select activity level</option>
                 <option value="sedentary">Sedentary</option>
@@ -173,6 +314,9 @@ function UserInfo() {
                 <option value="moderate">Moderately Active</option>
                 <option value="very">Very Active</option>
               </select>
+              {errors.activityLevel && (
+                <p className="mt-1 text-sm text-red-500">{errors.activityLevel}</p>
+              )}
             </div>
           </div>
         );

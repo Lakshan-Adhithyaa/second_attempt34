@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast, Toaster } from 'react-hot-toast';
 import { supabase } from '../lib/supabase-client';
+import { useAuth } from '../contexts/AuthContext';
 import { 
   Home, Dumbbell, LayoutGrid, User, Settings, Award, 
   Calendar, Bell, ChevronRight, Edit2, LogOut, Flame,
@@ -23,6 +24,7 @@ interface UserProfile {
 
 function Profile() {
   const navigate = useNavigate();
+  const { user, userProfile } = useAuth();
   const [showAvatarMenu, setShowAvatarMenu] = useState(false);
   const [avatar, setAvatar] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -30,7 +32,7 @@ function Profile() {
   const [showHelpModal, setShowHelpModal] = useState(false);
 
   const [profile, setProfile] = useState<UserProfile>({
-    name: 'John Doe',
+    name: userProfile?.full_name || 'John Doe',
     email: 'john@example.com',
     phone: '+1 234 567 8900',
     notifications: true,
@@ -40,6 +42,29 @@ function Profile() {
   });
 
   const [editableProfile, setEditableProfile] = useState<UserProfile>(profile);
+
+  useEffect(() => {
+    if (userProfile) {
+      setProfile({
+        name: userProfile?.full_name || 'John Doe',
+        email: userProfile.email || 'john@example.com',
+        phone: userProfile.phone || '+1 234 567 8900',
+        notifications: userProfile.notifications || true,
+        darkMode: userProfile.darkMode || true,
+        units: userProfile.units || 'metric',
+        privacyMode: userProfile.privacyMode || false,
+      });
+      setEditableProfile({
+         name: userProfile?.full_name || 'John Doe',
+        email: userProfile.email || 'john@example.com',
+        phone: userProfile.phone || '+1 234 567 8900',
+        notifications: userProfile.notifications || true,
+        darkMode: userProfile.darkMode || true,
+        units: userProfile.units || 'metric',
+        privacyMode: userProfile.privacyMode || false,
+      })
+    }
+  }, [userProfile]);
 
   const userStats = {
     workouts: 248,
@@ -214,7 +239,7 @@ function Profile() {
                       type="text"
                       value={editableProfile.name}
                       onChange={(e) => handleInputChange('name', e.target.value)}
-                      className="bg-white/10 px-2 py-1 rounded"
+                      className="bg-white/10 px-2 py-1 rounded text-white"
                     />
                   ) : profile.name}
                 </motion.h1>

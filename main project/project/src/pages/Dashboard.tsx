@@ -201,7 +201,7 @@ function Dashboard() {
       >
         <div className="absolute inset-0 bg-black/80" />
 
-        <main className="flex-1 relative z-10 p-6">
+        <main className="flex-1 relative z-10 p-6 pb-20"> {/* Added pb-20 for padding */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}

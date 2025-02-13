@@ -71,7 +71,7 @@ function SignUp() {
       if (authData.user) {
         const { error: profileError } = await supabase
           .from('user_profiles')
-          .insert([
+          .upsert([
             {
               id: authData.user.id,
               full_name: formData.name,
@@ -82,7 +82,7 @@ function SignUp() {
       }
 
       toast.success('Account created successfully!');
-      navigate('/user-info');
+      navigate('/dashboard');
     } catch (error) {
       toast.error('Failed to create account');
     } finally {
@@ -123,7 +123,7 @@ function SignUp() {
               transition={{ type: "spring", stiffness: 300 }}
             >
               <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-xl">FIT</span>
+                <span className="text-white font-bold text-xl">VF</span>
               </div>
             </motion.div>
             

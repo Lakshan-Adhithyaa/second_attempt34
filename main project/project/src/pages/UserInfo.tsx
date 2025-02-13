@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { supabase } from '../lib/supabase-client';
@@ -11,7 +11,6 @@ type FormStep = {
 };
 
 const steps: FormStep[] = [
-  { title: 'Personal Info', description: 'Basic information about you' },
   { title: 'Body Stats', description: 'Your physical measurements' },
   { title: 'Fitness Goals', description: 'What you want to achieve' },
   { title: 'Schedule', description: 'Your availability' }
@@ -19,12 +18,9 @@ const steps: FormStep[] = [
 
 function UserInfo() {
   const navigate = useNavigate();
-  const { user, userProfile } = useAuth();
+  const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
-    fullName: '',
-    age: '',
-    gender: '',
     height: '',
     weight: '',
     fitnessGoal: '',
@@ -34,38 +30,8 @@ function UserInfo() {
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  useEffect(() => {
-    if (userProfile) {
-      // Auto-fill the form with existing profile data
-      setFormData({
-        fullName: userProfile.full_name || '',
-        age: userProfile.age?.toString() || '',
-        gender: userProfile.gender || '',
-        height: userProfile.height?.toString() || '',
-        weight: userProfile.weight?.toString() || '',
-        fitnessGoal: userProfile.fitness_goal || '',
-        activityLevel: userProfile.activity_level || '',
-        workoutPreference: userProfile.workout_preference || '',
-        availability: userProfile.availability || []
-      });
-    }
-  }, [userProfile]);
-
-  useEffect(() => {
-    if (user && userProfile) {
-      // Check if all required profile data is present
-      const requiredFields = ['full_name', 'age', 'gender', 'height', 'weight', 'fitness_goal', 'activity_level'];
-      const isProfileComplete = requiredFields.every(field => userProfile[field]);
-
-      if (isProfileComplete) {
-        navigate('/dashboard');
-      }
-    }
-  }, [user, userProfile, navigate]);
-
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
@@ -76,25 +42,7 @@ function UserInfo() {
     let isValid = true;
 
     switch (step) {
-      case 0: // Personal Info
-        if (!formData.fullName.trim()) {
-          newErrors.fullName = 'Full name is required';
-          isValid = false;
-        }
-        if (!formData.age) {
-          newErrors.age = 'Age is required';
-          isValid = false;
-        } else if (parseInt(formData.age) < 13 || parseInt(formData.age) > 100) {
-          newErrors.age = 'Age must be between 13 and 100';
-          isValid = false;
-        }
-        if (!formData.gender) {
-          newErrors.gender = 'Gender is required';
-          isValid = false;
-        }
-        break;
-
-      case 1: // Body Stats
+      case 0: // Body Stats
         if (!formData.height) {
           newErrors.height = 'Height is required';
           isValid = false;
@@ -111,7 +59,7 @@ function UserInfo() {
         }
         break;
 
-      case 2: // Fitness Goals
+      case 1: // Fitness Goals
         if (!formData.fitnessGoal) {
           newErrors.fitnessGoal = 'Fitness goal is required';
           isValid = false;
@@ -143,9 +91,6 @@ function UserInfo() {
           .from('user_profiles')
           .upsert({
             id: user.id,
-            full_name: formData.fullName,
-            age: parseInt(formData.age),
-            gender: formData.gender,
             height: parseFloat(formData.height),
             weight: parseFloat(formData.weight),
             fitness_goal: formData.fitnessGoal,
@@ -174,66 +119,6 @@ function UserInfo() {
   const renderStep = () => {
     switch (currentStep) {
       case 0:
-        return (
-          <div className="space-y-6">
-            <div>
-              <label className="block text-gray-300 mb-2">
-                Full Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={formData.fullName}
-                onChange={(e) => handleInputChange('fullName', e.target.value)}
-                className={`w-full px-4 py-3 bg-white/10 rounded-lg border ${
-                  errors.fullName ? 'border-red-500' : 'border-white/20'
-                } text-white placeholder-gray-400 focus:outline-none focus:border-red-500`}
-                placeholder="Enter your full name"
-              />
-              {errors.fullName && (
-                <p className="mt-1 text-sm text-red-500">{errors.fullName}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-gray-300 mb-2">
-                Age <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                value={formData.age}
-                onChange={(e) => handleInputChange('age', e.target.value)}
-                className={`w-full px-4 py-3 bg-white/10 rounded-lg border ${
-                  errors.age ? 'border-red-500' : 'border-white/20'
-                } text-white placeholder-gray-400 focus:outline-none focus:border-red-500`}
-                placeholder="Enter your age"
-              />
-              {errors.age && (
-                <p className="mt-1 text-sm text-red-500">{errors.age}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-gray-300 mb-2">
-                Gender <span className="text-red-500">*</span>
-              </label>
-              <select
-                value={formData.gender}
-                onChange={(e) => handleInputChange('gender', e.target.value)}
-                className={`w-full px-4 py-3 bg-white/10 rounded-lg border ${
-                  errors.gender ? 'border-red-500' : 'border-white/20'
-                } text-white placeholder-gray-400 focus:outline-none focus:border-red-500`}
-              >
-                <option value="">Select gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
-              {errors.gender && (
-                <p className="mt-1 text-sm text-red-500">{errors.gender}</p>
-              )}
-            </div>
-          </div>
-        );
-
-      case 1:
         return (
           <div className="space-y-6">
             <div>
@@ -273,7 +158,7 @@ function UserInfo() {
           </div>
         );
 
-      case 2:
+      case 1:
         return (
           <div className="space-y-6">
             <div>
@@ -321,7 +206,7 @@ function UserInfo() {
           </div>
         );
 
-      case 3:
+      case 2:
         return (
           <div className="space-y-6">
             <div>
@@ -395,10 +280,9 @@ function UserInfo() {
                       index <= currentStep ? 'bg-red-500' : 'bg-white/20'
                     }`}
                   >
-                    {index === 0 && <User className="w-4 h-4 text-white" />}
-                    {index === 1 && <Scale className="w-4 h-4 text-white" />}
-                    {index === 2 && <Target className="w-4 h-4 text-white" />}
-                    {index === 3 && <Calendar className="w-4 h-4 text-white" />}
+                    {index === 0 && <Scale className="w-4 h-4 text-white" />}
+                    {index === 1 && <Target className="w-4 h-4 text-white" />}
+                    {index === 2 && <Calendar className="w-4 h-4 text-white" />}
                   </div>
                   {index < steps.length - 1 && (
                     <div
